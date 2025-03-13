@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Small Wela</title>
+  <style>
+    :root {
+      --primary: #ff80bf;
+      --primary-light: #ffc0e0;
+      --primary-dark: #d64088;
+      --accent: #ffcce6;
+      --text: #4a0025;
+      --background: #fff0f7;
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background-color: var(--background);
+      color: var(--text);
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+      font-size: 16px;
+    }
+    
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      text-align: center;
+      padding: 1.5rem 0;
+      box-shadow: 0 4px 15px rgba(214, 64, 136, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    h1 {
+      font-size: 2rem;
+      margin: 0;
+      text-shadow: 2px 2px 0px var(--primary-dark);
+      color: white;
+      animation: bounce 2s infinite;
+    }
+    
+    .bubbles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+    
+    .bubble {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      animation: float 8s infinite ease-in;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 100%;
+      margin: 1rem auto;
+      padding: 0 1rem;
+      box-sizing: border-box;
+      position: relative;
+    }
+    
+    .letter-container {
+      background-color: white;
+      padding: 1.5rem;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(214, 64, 136, 0.2);
+      transform-style: preserve-3d;
+      transition: transform 0.6s ease;
+      position: relative;
+      z-index: 10;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      hyphens: auto;
+    }
+    
+    .letter-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      border-bottom: 3px dotted var(--primary-light);
+      padding-bottom: 0.8rem;
+    }
+    
+    .letter-header h2 {
+      font-size: 1.5rem;
+      margin: 0;
+    }
+    
+    .letter-date {
+      text-align: right;
+      font-style: italic;
+      margin-bottom: 1.2rem;
+      color: var(--primary-dark);
+      font-size: 0.9rem;
+    }
+    
+    .letter-content {
+      font-size: 1rem;
+      line-height: 1.6;
+      position: relative;
+    }
+    
+    .letter-content p {
+      transition: all 0.3s ease;
+      margin: 0.8rem 0;
+    }
+    
+    .letter-content p:hover {
+      transform: scale(1.01);
+      color: var(--primary-dark);
+    }
+    
+    .letter-signature {
+      text-align: right;
+      margin-top: 1.5rem;
+      font-family: 'Brush Script MT', cursive;
+      font-size: 1.5rem;
+      color: var(--primary-dark);
+      transform: rotate(-5deg);
+      display: inline-block;
+      position: relative;
+      left: 70%;
+    }
+    
+    .draggable-img {
+      width: 70px;
+      height: 70px;
+      position: absolute;
+      cursor: pointer;
+      user-select: none;
+      transform-origin: center;
+      transition: filter 0.2s ease;
+      z-index: 100;
+      touch-action: none;
+    }
+    
+    .draggable-img:hover, .draggable-img:active {
+      filter: drop-shadow(0 0 8px var(--primary));
+    }
+    
+    .confetti {
+      position: fixed;
+      width: 8px;
+      height: 8px;
+      background-color: var(--primary);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 100;
+    }
+    
+    .decorations {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    .heart {
+      position: absolute;
+      background-color: var(--primary-light);
+      display: inline-block;
+      height: 15px;
+      width: 15px;
+      transform: rotate(-45deg);
+      opacity: 0.5;
+    }
+    
+    .heart:before,
+    .heart:after {
+      content: "";
+      background-color: var(--primary-light);
+      border-radius: 50%;
+      height: 15px;
+      position: absolute;
+      width: 15px;
+    }
+    
+    .heart:before {
+      top: -7.5px;
+      left: 0;
+    }
+    
+    .heart:after {
+      left: 7.5px;
+      top: 0;
+    }
+    
+    footer {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      margin-top: 2rem;
+      font-size: 0.9rem;
+    }
+    
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-500%) rotate(540deg);
+      }
+    }
+    
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+    
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.03);
+      }
+    }
+    
+    .sparkle {
+      position: absolute;
+      background-color: white;
+      border-radius: 50%;
+      animation: sparkle 1.5s infinite;
+      opacity: 0;
+    }
+    
+    @keyframes sparkle {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1);
+        opacity: 0.8;
+      }
+      100% {
+        transform: scale(0);
+        opacity: 0;
+      }
+    }
+    
+    .tooltip {
+      position: absolute;
+      background-color: var(--primary-dark);
+      color: white;
+      padding: 0.4rem 0.8rem;
+      border-radius: 5px;
+      font-size: 0.8rem;
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+      z-index: 1000;
+      transform: translateY(10px);
+      max-width: 150px;
+      text-align: center;
+    }
+    
+    .show-tooltip {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .drag-welcome {
+      text-align: center;
+      margin-top: 1.5rem;
+      padding: 0.8rem;
+      background-color: var(--primary-light);
+      border-radius: 10px;
+      color: var(--text);
+      animation: pulse 2s infinite;
+      font-size: 0.9rem;
+    }
+    
+    /* Media Queries */
+    @media (min-width: 768px) {
+      .container {
+        max-width: 750px;
+        padding: 0 2rem;
+      }
+      
+      h1 {
+        font-size: 3rem;
+      }
+      
+      .letter-header h2 {
+        font-size: 2rem;
+      }
+      
+      .letter-content {
+        font-size: 1.1rem;
+      }
+      
+      .draggable-img {
+        width: 85px;
+        height: 85px;
+      }
+    }
+    
+    @media (min-width: 992px) {
+      .container {
+        max-width: 970px;
+      }
+      
+      h1 {
+        font-size: 3.5rem;
+      }
+      
+      .letter-container {
+        padding: 2rem;
+      }
+    }
+    
+    /* Custom Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: var(--background);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background-color: var(--primary);
+      border-radius: 10px;
+      border: 2px solid var(--background);
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    body {
+      scrollbar-width: thin;
+      scrollbar-color: var(--primary) var(--background);
+    }
+  </style>
+</head>
+<body>
+  <div class="bubbles" id="bubbles"></div>
+  
+  <header>
+    <h1>Monthsary Letter</h1>
+    <div class="decorations" id="header-decorations"></div>
+  </header>
+  
+  <div class="container">
+    <div class="letter-container" id="letter">
+      <div class="letter-header">
+        <h2>My Special Letter</h2>
+      </div>
+      
+      <div class="letter-date">March 13, 2025</div>
+      
+      <div class="letter-content">
+        <p>Dear Wela,</p>
+        <p>
+          This letter is for our monthsary today and for our biggest fight yet. It is for the things we didn't mean to say or do, and for the things we want to apologize for and change. First off, Happy Monthsary to the hottest, cutest, prettiest, most beautiful person I know, my lovable minion.
+        </p>
+        <p>
+          We fought and broke up once again, but it's okay; we forgave each other. I personally think that I did something wrong, which is why you got mad at me. But whatever happened yesterday and last night is something we must let go of. I do know I messed up, acted immaturely, and did things you didn't like in one day.
+        </p>
+        <p>
+          And I really, really apologize because I did hurt you, and we hurt each other. However, I know that there is still some resentment from you towards me. I can't make promises now because I know that if I don't keep them, it means I'm lying to you. I did learn, baby, not to make promises, because I have a baby who truly depends on me.
+        </p>
+        <p>
+          You told me to show you what love meant again, and I asked you if you would show it to me as well, and you said yes, so I think it's safe to say that I'm showing it from here on. I'm really sorry for breaking your heart once again, my little minion; I know you couldn't handle it earlier—we couldn't handle it. What you said is valid, but I truly hope that what I said is valid for you as well. And baby, I don't restrict you from watching K-dramas, okay? It just hurts me whenever you give attention to other guys. I know I seem childish when I'm jealous, but you're all mine.
+        </p>
+        <p>
+          I hope you know that I still watch over you no matter what fights we have; my eyes are always on you. I hope that you understand even my possessiveness, obsession, and stubbornness towards you. I hope you'll never call me insecure like most girls I see on TikTok. I believe that a relationship will always come with insecurities, and to lessen them, we need to build trust. As we all know, our trust has been broken, so our goal is to rebuild it for us.
+        </p>
+        <p>
+          What I'll do for you from now on is out of love, and not because I'm annoyed or sulking. From now on, let's act like a new couple at SIA, not influenced by friends, teachers, or strangers. Just two kids trying to find the answer to "what is it to love?" Let's do that, my love, okay? I know we can do it, I know we can make it happen.
+        </p>
+        <p>
+          I hope this letter finds you well and brings a smile to your face. Feel free to play with the cute cat images - just tap them to move them around!
+        </p>
+        <p>Wishing you all the happiness in the world. Happy Monthsary!</p>
+      </div>
+    </div>
+    
+    <div class="drag-welcome" id="drag-welcome">
+      Tap and drag the cute kitties anywhere on the page!
+    </div>
+  </div>
+  
+  <div class="tooltip" id="tooltip"></div>
+  
+  <script>
+    // Create bubbles for header background
+    const bubblesContainer = document.getElementById('bubbles');
+    const createBubbles = () => {
+      for (let i = 0; i < 30; i++) {
+        const bubble = document.createElement('div');
+        bubble.classList.add('bubble');
+        const size = Math.random() * 40 + 10;
+        bubble.style.width = `${size}px`;
+        bubble.style.height = `${size}px`;
+        bubble.style.left = `${Math.random() * 100}%`;
+        bubble.style.top = `${Math.random() * 100}%`;
+        bubble.style.animationDelay = `${Math.random() * 8}s`;
+        bubble.style.animationDuration = `${Math.random() * 10 + 5}s`;
+        bubblesContainer.appendChild(bubble);
+      }
+    };
+    
+    // Create hearts for decorations
+    const createHearts = () => {
+      const decorations = document.getElementById('header-decorations');
+      for (let i = 0; i < 10; i++) {
+        const heart = document.createElement('div');
+        heart.classList.add('heart');
+        const size = Math.random() * 15 + 8;
+        heart.style.width = `${size}px`;
+        heart.style.height = `${size}px`;
+        heart.style.left = `${Math.random() * 100}%`;
+        heart.style.top = `${Math.random() * 100}%`;
+        decorations.appendChild(heart);
+      }
+    };
+    
+    // Create sparkles effect
+    const createSparkleEffect = () => {
+      const letter = document.getElementById('letter');
+      setInterval(() => {
+        const sparkle = document.createElement('div');
+        sparkle.classList.add('sparkle');
+        const size = Math.random() * 6 + 2;
+        sparkle.style.width = `${size}px`;
+        sparkle.style.height = `${size}px`;
+        sparkle.style.left = `${Math.random() * 100}%`;
+        sparkle.style.top = `${Math.random() * 100}%`;
+        letter.appendChild(sparkle);
+        setTimeout(() => {
+          sparkle.remove();
+        }, 1500);
+      }, 500);
+    };
+    
+    // Create a confetti effect using page coordinates
+    const createConfetti = (x, y) => {
+      for (let i = 0; i < 20; i++) {
+        const confetti = document.createElement('div');
+        confetti.classList.add('confetti');
+        const colors = ['#ff80bf', '#ffc0e0', '#ffcce6', '#ff3385', '#d64088'];
+        const size = Math.random() * 8 + 3;
+        confetti.style.width = `${size}px`;
+        confetti.style.height = `${size}px`;
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.left = `${x}px`;
+        confetti.style.top = `${y}px`;
+        document.body.appendChild(confetti);
+        const angle = Math.random() * 360;
+        const distance = Math.random() * 70 + 30;
+        const animationDuration = Math.random() * 1 + 0.5;
+        confetti.style.opacity = '1';
+        confetti.style.transform = `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px) rotate(${Math.random() * 360}deg)`;
+        confetti.style.transition = `transform ${animationDuration}s cubic-bezier(0.1, 0.8, 0.3, 1), opacity ${animationDuration}s cubic-bezier(0.1, 0.8, 0.3, 1)`;
+        setTimeout(() => {
+          confetti.style.opacity = '0';
+          setTimeout(() => {
+            confetti.remove();
+          }, animationDuration * 1000);
+        }, 100);
+      }
+    };
+    
+    // Create and handle draggable images with touch and mouse support
+    const createDraggableImages = () => {
+      const images = ['cat', 'cat2', 'kitty', 'sugar', 'sugar2', 'sugar3'];
+      let activeSticker = null;
+      let offsetX = 0, offsetY = 0;
+      const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      
+      // Touch handlers
+      function onTouchMove(e) {
+        if (activeSticker && e.touches && e.touches[0]) {
+          e.preventDefault();
+          const touch = e.touches[0];
+          let newX = touch.pageX - offsetX;
+          let newY = touch.pageY - offsetY;
+          
+          // Keep sticker within viewport
+          const maxX = window.innerWidth - activeSticker.offsetWidth;
+          const maxY = window.innerHeight - activeSticker.offsetHeight;
+          newX = Math.max(0, Math.min(newX, maxX));
+          newY = Math.max(0, Math.min(newY, maxY));
+          
+          activeSticker.style.left = `${newX}px`;
+          activeSticker.style.top = `${newY}px`;
+          
+          const randomRotation = (Math.random() - 0.5) * 10;
+          activeSticker.style.transform = `rotate(${randomRotation}deg) scale(1.1)`;
+        }
+      }
+      
+      function onTouchEnd(e) {
+        if (activeSticker) {
+          // Create confetti at the end position
+          const rect = activeSticker.getBoundingClientRect();
+          createConfetti(rect.left + rect.width/2, rect.top + rect.height/2);
+          
+          activeSticker.style.transform = 'rotate(0deg) scale(1)';
+          activeSticker = null;
+        }
+        
+        document.removeEventListener('touchmove', onTouchMove);
+        document.removeEventListener('touchend', onTouchEnd);
+      }
+      
+      // Mouse handlers
+      function onMouseMove(e) {
+        if (activeSticker) {
+          let newX = e.pageX - offsetX;
+          let newY = e.pageY - offsetY;
+          
+          // Keep sticker within viewport
+          const maxX = window.innerWidth - activeSticker.offsetWidth;
+          const maxY = window.innerHeight - activeSticker.offsetHeight;
+          newX = Math.max(0, Math.min(newX, maxX));
+          newY = Math.max(0, Math.min(newY, maxY));
+          
+          activeSticker.style.left = `${newX}px`;
+          activeSticker.style.top = `${newY}px`;
+          
+          const randomRotation = (Math.random() - 0.5) * 10;
+          activeSticker.style.transform = `rotate(${randomRotation}deg) scale(1.1)`;
+        }
+      }
+      
+      function onMouseUp(e) {
+        if (activeSticker) {
+          // Create confetti at the end position
+          createConfetti(e.pageX, e.pageY);
+          
+          activeSticker.style.transform = 'rotate(0deg) scale(1)';
+          activeSticker = null;
+        }
+        
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+      }
+      
+      // Create stickers
+      images.forEach((img, index) => {
+        const imgEl = document.createElement('img');
+        imgEl.src = `img/${img}.png`; // Use actual images from img folder
+        imgEl.alt = img;
+        imgEl.classList.add('draggable-img');
+        imgEl.draggable = false; // Disable default drag behavior
+        
+        // Position stickers in viewable area
+        const viewportWidth = Math.min(window.innerWidth, 600);
+        const viewportHeight = Math.min(window.innerHeight - 200, 800);
+        const startX = Math.random() * (viewportWidth - 80);
+        const startY = Math.max(200, Math.random() * viewportHeight);
+        
+        imgEl.style.left = `${startX}px`;
+        imgEl.style.top = `${startY}px`;
+        imgEl.style.zIndex = 100 + index;
+        document.body.appendChild(imgEl);
+        
+        // Touch event handlers
+        imgEl.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          if (activeSticker) return;
+          
+          activeSticker = imgEl;
+          const touch = e.touches[0];
+          const rect = imgEl.getBoundingClientRect();
+          offsetX = touch.pageX - rect.left;
+          offsetY = touch.pageY - rect.top;
+          
+          imgEl.style.zIndex = 200;
+          document.addEventListener('touchmove', onTouchMove, { passive: false });
+          document.addEventListener('touchend', onTouchEnd);
+          
+          // Create confetti effect
+          createConfetti(touch.pageX, touch.pageY);
+        }, { passive: false });
+        
+        // Mouse event handlers
+        imgEl.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          if (activeSticker) return;
+          
+          activeSticker = imgEl;
+          offsetX = e.pageX - imgEl.offsetLeft;
+          offsetY = e.pageY - imgEl.offsetTop;
+          
+          imgEl.style.zIndex = 200;
+          document.addEventListener('mousemove', onMouseMove);
+          document.addEventListener('mouseup', onMouseUp);
+          
+          // Create confetti effect
+          createConfetti(e.pageX, e.pageY);
+        });
+        
+        // Only show tooltip on non-mobile devices
+        if (!isMobile) {
+          // Tooltip handling
+          imgEl.addEventListener('mouseover', (e) => {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.textContent = `Tap and drag me!`;
+            tooltip.style.left = `${e.pageX + 10}px`;
+            tooltip.style.top = `${e.pageY + 10}px`;
+            tooltip.classList.add('show-tooltip');
+          });
+          
+          imgEl.addEventListener('mouseout', () => {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.classList.remove('show-tooltip');
+          });
+          
+          imgEl.addEventListener('mousemove', (e) => {
+            const tooltip = document.getElementById('tooltip');
+            tooltip.style.left = `${e.pageX + 10}px`;
+            tooltip.style.top = `${e.pageY + 10}px`;
+          });
+        }
+      });
+      
+      // Update instruction text based on device
+      const dragWelcome = document.getElementById('drag-welcome');
+      if (isMobile) {
+        dragWelcome.textContent = "Tap and drag the cute kitties anywhere on the page!";
+      } else {
+        dragWelcome.textContent = "Click and drag the cute kitties anywhere on the page!";
+      }
+    };
+    
+    // Letter text animation
+    const animateLetterText = () => {
+      const paragraphs = document.querySelectorAll('.letter-content p');
+      paragraphs.forEach((p, index) => {
+        p.style.opacity = '0';
+        p.style.transform = 'translateY(20px)';
+        p.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        p.style.transitionDelay = `${index * 0.15}s`;
+        setTimeout(() => {
+          p.style.opacity = '1';
+          p.style.transform = 'translateY(0)';
+        }, 300);
+      });
+    };
+    
+    // Handle viewport height for mobile browsers
+    function setVh() {
+      let vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }
+    
+    window.addEventListener('load', () => {
+      setVh();
+      createBubbles();
+      createHearts();
+      createSparkleEffect();
+      createDraggableImages();
+      animateLetterText();
+      
+      // Prevent default behaviors that might interfere with our functionality
+      document.addEventListener('dragover', function (e) {
+        e.preventDefault();
+      });
+      
+      document.addEventListener('touchmove', function(e) {
+        if (e.scale !== 1) {
+          e.preventDefault();
+        }
+      }, { passive: false });
+    });
+    
+    // Update viewport height on resize
+    window.addEventListener('resize', setVh);
+  </script>
+</body>
+</html>
